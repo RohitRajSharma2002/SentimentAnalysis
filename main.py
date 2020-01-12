@@ -27,11 +27,11 @@ def getSentiment():
     stringToCheck = [i.rstrip(',') for i in stringToCheck]   # remove , from user input
     loadWords.posWords = [i.lower() for i in loadWords.posWords] # normalise words into lowercase
     loadWords.negWords = [i.lower() for i in loadWords.negWords]
-
-    positiveCheck(stringToCheck)
-    negativeCheck(stringToCheck)
+    checkDuplicates(stringToCheck)
     checkNegativeContra(stringToCheck)
     checkPositiveContra(stringToCheck)
+    checkPositive(stringToCheck)
+    checkNegative(stringToCheck)
     print(getSentiment.posCount, getSentiment.negCount)
     try:
         print('postive score ',round(getSentiment.posCount/(getSentiment.posCount+getSentiment.negCount),2))
@@ -41,8 +41,9 @@ def getSentiment():
         print('negative score ',round(getSentiment.negCount/(getSentiment.posCount+getSentiment.negCount),2))
     except ZeroDivisionError:
         print('negative score',0)
+    print(getSentiment.posFlag, getSentiment.negFlag)
         
-def positiveCheck(stringToCheck):
+def checkNegativeContra(stringToCheck):
     for i in range(0, len(loadWords.posWords)-1):
         for j in range(0, len(stringToCheck)-1):
             if loadWords.posWords[i] == stringToCheck[j]: 
@@ -57,7 +58,7 @@ def positiveCheck(stringToCheck):
                 pass
         
 
-def negativeCheck(stringToCheck):
+def checkPositiveContra(stringToCheck):
     for i in range(0, len(loadWords.negWords)-1):
         for j in range(0, len(stringToCheck)-1):
             if loadWords.negWords[i] == stringToCheck[j]:
@@ -70,28 +71,55 @@ def negativeCheck(stringToCheck):
                 except:
                     pass
 
-def checkNegativeContra(stringToCheck):
+def checkPositive(stringToCheck):
     for word in stringToCheck:
-        for i in loadWords.posWords:
-            if word.lower() == i.lower(): # check if words ,atch
-                if word + " " + str(stringToCheck.index(word)) not in getSentiment.posFlag.keys(): # check if this exact word has been already scanned
-                    print('found positive at',stringToCheck.index(word))
-                    getSentiment.posCount+=1  
-                    getSentiment.posFlag[word + " " + str(stringToCheck.index(word))] = 1  # add the flag
+        try:
+            int(word[-1])   # check if the word had an inetger label at the end
+        except:     # if it does not do this
+            for i in loadWords.posWords:
+                if word.lower() == i.lower(): # check if words ,atch
+                    if word + " " + str(stringToCheck.index(word)) not in getSentiment.posFlag.keys(): # check if this exact word has been already scanned
+                        print('found positive at',stringToCheck.index(word))
+                        getSentiment.posCount+=1  
+                        getSentiment.posFlag[word + " " + str(stringToCheck.index(word))] = 1  # add the flag
+             
+        else:  # else modify the word to check only letters and compare
+            for i in loadWords.posWords:
+                if word[0:-1].lower() == i.lower(): # check if words ,atch
+                    if word + " " + str(stringToCheck.index(word)) not in getSentiment.posFlag.keys(): # check if this exact word has been already scanned
+                        print('found positive at',stringToCheck.index(word))
+                        getSentiment.posCount+=1  
+                        getSentiment.posFlag[word + " " + str(stringToCheck.index(word))] = 1  # add the flag
 
-
-def checkPositiveContra(stringToCheck):
+def checkNegative(stringToCheck):
     for word in stringToCheck:
         for i in loadWords.negWords:
-            if word.lower() == i.lower():
-                if word + " " + str(stringToCheck.index(word)) not in getSentiment.negFlag.keys(): # check if this exact word has been scanned
-                    print("found negative at", stringToCheck.index(word))
-                    getSentiment.negCount+=1 
-                    getSentiment.negFlag[word+" "+ str(stringToCheck.index(word))] = 1   # add the flag
-            else:
-                pass
+            try:    # check if thr word has en inetger label
+                int(word[-1])
+            except:   # if it doesnt comapre the words 
+                    if word.lower() == i.lower():
+                        if word + " " + str(stringToCheck.index(word)) not in getSentiment.negFlag.keys(): # check if this exact word has been scanned
+                            print("found negative at", stringToCheck.index(word))
+                            getSentiment.negCount+=1 
+                            getSentiment.negFlag[word+" "+ str(stringToCheck.index(word))] = 1   # add the flag
+            else:    # if it dows mdofiy thr word and comapre
+                if word[0:-1].lower() == i.lower():
+                    if word + " " + str(stringToCheck.index(word)) not in getSentiment.negFlag.keys(): # check if this exact word has been scanned
+                        print("found negative at", stringToCheck.index(word))
+                        getSentiment.negCount+=1 
+                        getSentiment.negFlag[word+" "+ str(stringToCheck.index(word))] = 1   # add the flag
 
+        
 
+def checkDuplicates(stringToCheck):
+    ''' check if recurrances of words exixtx,
+        if they do then add a counter and their end and modify the word     
+    '''
+    counter = 1
+    for i in range(0, len(stringToCheck)):
+        if stringToCheck.count(stringToCheck[i]) > 1:
+            stringToCheck[i] = stringToCheck[i] + str(counter)
+            counter+=1
 
 
 loadWords()
