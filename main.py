@@ -2,8 +2,8 @@ import string
 
 def loadWords():
     # # # # load words from the file # # # #
-    posFile = open("C:\\Users\\rohit\\PycharmProjects\\SentimentAnalysis\\__init__\\positiveWords.txt", "r")
-    negFile = open("C:\\Users\\rohit\\PycharmProjects\\SentimentAnalysis\\__init__\\negativeWords.txt", "r", errors="ignore")
+    posFile = open("\\positiveWords.txt", "r")
+    negFile = open("\\negativeWords.txt", "r", errors="ignore")
     loadWords.posWords = posFile.readlines()
     loadWords.posWords = [i.rstrip("\n") for i in loadWords.posWords]
     loadWords.negWords = negFile.readlines()
